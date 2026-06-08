@@ -9,11 +9,19 @@ pipeline {
             }
         }
 
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies from requirements.txt...'
+                bat 'C:\\Python313\\python.exe -m pip install -r requirements.txt --quiet'
+                echo 'Dependencies installed successfully'
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Building the application...'
                 bat 'python --version'
-                bat 'python app.py'
+                bat 'C:\\Python313\\python.exe app.py'
             }
         }
 
