@@ -8,3 +8,6 @@ def test_subtract():
 
 def test_multiply():
     assert app.multiply(3, 5) == 15
+
+def test_power():
+    assert app.power(2, 3) == 8
