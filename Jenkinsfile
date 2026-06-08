@@ -47,9 +47,49 @@ pipeline {
     post {
         success {
             echo "Pipeline #${BUILD_NUMBER} completed successfully!"
+            mail(
+                to: 'akshaanshs@gmail.com',
+                subject: "✅ SUCCESS: Jenkins Build #${BUILD_NUMBER}",
+                body: """
+Hi Akshaansh,
+
+Your Jenkins pipeline ran successfully!
+
+Job Name   : ${JOB_NAME}
+Build Number: ${BUILD_NUMBER}
+Branch     : ${GIT_BRANCH}
+Status     : SUCCESS
+
+Check the full build at:
+${BUILD_URL}
+
+- Jenkins
+                """
+            )
         }
         failure {
             echo "Pipeline #${BUILD_NUMBER} failed! Check the logs."
+            mail(
+                to: 'akshaanshs@gmail.com',
+                subject: "❌ FAILED: Jenkins Build #${BUILD_NUMBER}",
+                body: """
+Hi Akshaansh,
+
+Your Jenkins pipeline has FAILED!
+
+Job Name   : ${JOB_NAME}
+Build Number: ${BUILD_NUMBER}
+Branch     : ${GIT_BRANCH}
+Status     : FAILED
+
+Check the console output for errors:
+${BUILD_URL}console
+
+Please fix the issue and push again.
+
+- Jenkins
+                """
+            )
         }
         always {
             echo 'Pipeline finished. Cleaning up...'
