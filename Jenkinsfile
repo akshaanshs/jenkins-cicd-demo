@@ -20,7 +20,7 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                bat 'python -m pytest test_app.py -v'
+                bat 'C:\\Users\\aksha\\AppData\\Roaming\\Python\\Python313\\Scripts\\pytest.exe test_app.py -v'
             }
         }
 
