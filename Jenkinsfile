@@ -27,8 +27,10 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
-                echo 'Build Number: ${BUILD_NUMBER}'
-                echo 'Branch: ${GIT_BRANCH}'
+                echo "Build Number: ${BUILD_NUMBER}"
+                echo "Branch: ${GIT_BRANCH}"
+                echo "Workspace: ${WORKSPACE}"
+                echo "Job Name: ${JOB_NAME}"
                 echo 'Deploy step would go here in production'
             }
         }
@@ -36,10 +38,10 @@ pipeline {
 
     post {
         success {
-            echo 'Pipeline completed successfully!'
+            echo "Pipeline #${BUILD_NUMBER} completed successfully!"
         }
         failure {
-            echo 'Pipeline failed! Check the logs.'
+            echo "Pipeline #${BUILD_NUMBER} failed! Check the logs."
         }
         always {
             echo 'Pipeline finished. Cleaning up...'
