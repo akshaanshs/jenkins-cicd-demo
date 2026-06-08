@@ -1,6 +1,11 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_IMAGE = 'calculator-app'
+        DOCKER_TAG = "${BUILD_NUMBER}"
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -20,7 +25,6 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                bat 'python --version'
                 bat 'C:\\Python313\\python.exe app.py'
             }
         }
@@ -32,14 +36,29 @@ pipeline {
             }
         }
 
+        stage('Docker Build') {
+            steps {
+                echo "Building Docker image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                bat "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
+                bat "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
+                echo "Docker image built successfully"
+            }
+        }
+
+        stage('Docker Test') {
+            steps {
+                echo 'Running app inside Docker container...'
+                bat "docker run --rm ${DOCKER_IMAGE}:latest"
+            }
+        }
+
         stage('Deploy') {
             steps {
                 echo 'Deploying application...'
                 echo "Build Number: ${BUILD_NUMBER}"
                 echo "Branch: ${GIT_BRANCH}"
-                echo "Workspace: ${WORKSPACE}"
-                echo "Job Name: ${JOB_NAME}"
-                echo 'Deploy step would go here in production'
+                echo "Docker Image: ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                echo 'In production this would push to Docker Hub or AWS ECR'
             }
         }
     }
@@ -55,10 +74,11 @@ Hi Akshaansh,
 
 Your Jenkins pipeline ran successfully!
 
-Job Name   : ${JOB_NAME}
+Job Name    : ${JOB_NAME}
 Build Number: ${BUILD_NUMBER}
-Branch     : ${GIT_BRANCH}
-Status     : SUCCESS
+Branch      : ${GIT_BRANCH}
+Docker Image: calculator-app:${BUILD_NUMBER}
+Status      : SUCCESS
 
 Check the full build at:
 ${BUILD_URL}
@@ -77,10 +97,10 @@ Hi Akshaansh,
 
 Your Jenkins pipeline has FAILED!
 
-Job Name   : ${JOB_NAME}
+Job Name    : ${JOB_NAME}
 Build Number: ${BUILD_NUMBER}
-Branch     : ${GIT_BRANCH}
-Status     : FAILED
+Branch      : ${GIT_BRANCH}
+Status      : FAILED
 
 Check the console output for errors:
 ${BUILD_URL}console
@@ -93,6 +113,7 @@ Please fix the issue and push again.
         }
         always {
             echo 'Pipeline finished. Cleaning up...'
+            bat "docker rmi ${DOCKER_IMAGE}:${BUILD_NUMBER} || exit 0"
         }
     }
 }
