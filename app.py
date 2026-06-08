@@ -15,6 +15,9 @@ def divide(a, b):
 def power(a, b):
     return a ** b
 
+def square_root(a):
+    return a ** 0.5
+
 if __name__ == "__main__":
     print("Calculator App")
     print("2 + 3 =", add(2, 3))
